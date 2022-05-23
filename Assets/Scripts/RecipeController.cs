@@ -62,6 +62,28 @@ public class RecipeController : MonoBehaviour
         return this.gameObject.activeSelf;
     }
 
+    public bool isRecipeCorrect(Recipe candidateRecipe)
+    {
+        if(setRecipe.container == candidateRecipe.container && compareLiquids(setRecipe.liquids, candidateRecipe.liquids))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private bool compareLiquids(List<IngredientType> masterLiquidList,  List<IngredientType> candidateLiquidList)
+    {
+        int masterLiquidListSize = masterLiquidList.Count;
+        for(int i = 0; i< masterLiquidListSize ; i++)
+        {
+            if(masterLiquidList[i] != candidateLiquidList[i])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void updateGraphics()
     {
         resetGraphics();

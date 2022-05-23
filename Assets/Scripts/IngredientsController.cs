@@ -53,8 +53,6 @@ public class IngredientsController : MonoBehaviour
         foreach (IngredientType ingredientType in ingredients)
         {
             var spriteRenderer = IngredientPositions[i].GetComponent<SpriteRenderer>();
-            Debug.Log(spriteRenderer.gameObject.name);
-            Debug.Log(Color.red);
             switch (ingredientType)
             {
                 case IngredientType.Red:
@@ -87,6 +85,11 @@ public class IngredientsController : MonoBehaviour
             }
             i++;
         }
+    }
+
+    public IngredientType GetIngredientTypeByIndex(int index)
+    {
+        return ingredients[index];
     }
 
     /// <summary>

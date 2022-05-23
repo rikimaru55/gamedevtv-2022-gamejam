@@ -58,4 +58,13 @@ public class ClientOrderManager : MonoBehaviour
             }
         }
     }
+
+    public bool IsRecipeCorrect(int clientIndex, Recipe recipe)
+    {
+        if(RecipeControllers[clientIndex] != null)
+        {
+            return RecipeControllers[clientIndex].isRecipeCorrect(recipe);
+        }
+        return false;
+    }
 }
