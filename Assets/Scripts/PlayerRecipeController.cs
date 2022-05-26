@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class PlayerRecipeController : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class PlayerRecipeController : MonoBehaviour
 
     public void ResetPlayerRecipe()
     {
-        foreach(var liquidSprite in LiquidSprites)
+        foreach (var liquidSprite in LiquidSprites)
         {
             liquidSprite.gameObject.SetActive(false);
         }
@@ -79,8 +80,16 @@ public class PlayerRecipeController : MonoBehaviour
         setLiquids(recipe.liquids);
     }
 
-    public void ResetRecipeAnimation()
+    public void ResetRecipeAnimation(Action onResetRecipeAnimation)
     {
-        //Do animations for recipe reset 
+        foreach (var liquidSprite in LiquidSprites)
+        {
+            liquidSprite.gameObject.transform.DOPunchPosition(Vector3.right * 0.25f, 0.5f, 5, 1);
+        }
+        var containerGameObject = ContainerSpriteRenderer.gameObject;
+        containerGameObject.transform.DOPunchPosition(Vector3.right * 0.25f, 0.5f, 5, 1).OnComplete(() =>
+        {
+            onResetRecipeAnimation();
+        });
     }
 }

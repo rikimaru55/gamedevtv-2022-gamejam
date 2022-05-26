@@ -11,6 +11,10 @@ public class Constants
     public static readonly IngredientType[] Liquids = { IngredientType.Red, IngredientType.Green, IngredientType.Blue, IngredientType.Yellow };
     public static readonly int MaxLiquids = 4;
     public static readonly int PlayerMaxHealth = 3;
+    public static readonly string MAIN_MENU_SCENE_Name = "Main_Menu";
+    public static readonly string MAIN_GAME_SCENE_NAME = "Main_Game";
+    public static readonly string END_SCENE_NAME = "End";
+    public static readonly string GAME_OVER_SCENE_NAME = "GameOver";
 
     public static bool isContainer(IngredientType ingredientToCheck)
     {

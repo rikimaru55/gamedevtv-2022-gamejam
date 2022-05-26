@@ -29,14 +29,41 @@ The player starts in the middle of a bar, they can move left and right, and stan
 * Main Menu
 * Music for the menu, the main gameplay loop, and the gameover screen.
 * Sound effects for moving, picking a glass, pouring ingredient, serving, happy customer, angry customer, death.
-* Clients should say something when they get served, something creepy or memorable.
+* Clients should say something when they get served, something creepy or memorable.(Writing out full sentences will take took long, see Ghostalk section)
 * When clients talk have them make “simlish” sounds.
 * Each drink you serve has a randomly generated name
+
+### Ghostalk System TM
+Having taken a stab at a simple implementation for this, it will take too long for the ghosts to have full sentences.
+An alternative is having Death say that the ghosts speak mostly gibberish and therefore you'll only grasp a few words,
+so when they "Talk" we make most of it gibberish, except for a couple of "key words", example:
+	"Ghost: BlaBla BlaBlaBla Wife BlaBlaBla Ache BlaBlaBla"
+We'll make those "BlaBla" sounds with simlish.
+* Each ghost will have between 1 and 3 keywords.
+* We'll try and match the kind of keyword with the most predominant type of liquid in their drinks.
+* Possible Keywords: Feelings, Places, Names, Months, Events, Colors, etc...
+* At the end of a game, we'll let players scroll through all the generated phrases.
+
+### TODO
+## Wednesday
+Animation Part 1
+## Thursday
+Make each client have to order several drinks before leaving.
+Sound
+## Friday
+Dialogue generator and simlish
+Start and end cinematics
+## Saturday
+Level Design
+Testing & Polishing
+## Sunday
+Emergency
+## Monday
+Distribution
 
 ### NTHs
 * Each client’s appearance is randomized.
 * Each drink you served has a randomly generated name based on its ingredients(giving meaning to each colour, research Greek Humours for this)
-* 
 
 ### Further development
 * Controller support?
@@ -51,3 +78,6 @@ https://unsplash.com/photos/osuiatBDTww
 https://unsplash.com/es/fotos/BPWZ01FtySg
 
 ArtDeco Geometric Patterns from [Used in background for itch.io]: https://pixelbuddha.net/patterns/art-deco-geometric-patterns
+
+Better Minimal WebGL Template:
+https://seansleblanc.itch.io/better-minimal-webgl-template/download/eyJpZCI6MTg3NDE2LCJleHBpcmVzIjoxNjUzMzYzMjE5fQ%3d%3d.8pDl6xP8aG0yzfNGSkJg8S96yHI%3d

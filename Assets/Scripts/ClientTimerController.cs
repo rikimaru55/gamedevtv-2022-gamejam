@@ -2,8 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
-public class ClientTimerController : MonoBehaviour
+public class ClientTimerController : ClientCommon
 {
     public GameObject Timer;
     public int Index;
@@ -11,8 +12,10 @@ public class ClientTimerController : MonoBehaviour
     private float timeCounter = 0;
     private float timeGoal = 0;
     private bool timerRunning = false;
-    public void resetTimer(float timeInSeconds, Action<int> onTimerEnd)
+    public SpriteRenderer[] SpriteRenderers;
+    public void ResetTimer(float timeInSeconds, Action<int> onTimerEnd)
     {
+        EnableTimer();
         this.onTimerEnd = onTimerEnd;
         timeGoal = timeInSeconds;
         timeCounter = 0;
@@ -24,6 +27,23 @@ public class ClientTimerController : MonoBehaviour
     {
         timerRunning = false;
         Timer.transform.rotation = Quaternion.identity;
+    }
+
+    public void DisableTimer()
+    {
+       stopTimer();
+       this.gameObject.SetActive(false);
+    }
+
+    public void EnableTimer()
+    {
+        stopTimer();
+        this.gameObject.SetActive(true);
+    }
+
+    public bool IsTimerRunning()
+    {
+        return timerRunning;
     }
 
     // Update is called once per frame
@@ -41,5 +61,15 @@ public class ClientTimerController : MonoBehaviour
             Timer.transform.rotation = Quaternion.identity;
             Timer.transform.Rotate(new Vector3(0, 0, -timerAngle));
         }
+    }
+
+    public void FadeOutClient(Action onFadeOutClientEnd)
+    {
+        spriteRenderersFadeOut(SpriteRenderers, () =>
+        {
+            this.DisableTimer();
+            this.ResetSpriteRenderers(SpriteRenderers);
+            onFadeOutClientEnd();
+        });
     }
 }

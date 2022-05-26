@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public struct Recipe
 {
@@ -9,10 +10,11 @@ public struct Recipe
     public IngredientType container;
 }
 
-public class RecipeController : MonoBehaviour
+public class RecipeController : ClientCommon
 {
     public SpriteRenderer[] LiquidSprites;
     public SpriteRenderer ContainerSprite;
+    public SpriteRenderer[] SpriteRenderers;
     public Sprite Tumbler;
     public Sprite WineGlass;
     public Sprite PintGlass;
@@ -47,6 +49,15 @@ public class RecipeController : MonoBehaviour
         updateGraphics();
     }
 
+    public void FadeOutRecipe(Action onFadeOutRecipeEnd)
+    {
+        this.spriteRenderersFadeOut(SpriteRenderers, () => {
+            this.DisableRecipe();
+            this.ResetSpriteRenderers(SpriteRenderers);
+            onFadeOutRecipeEnd();
+        });
+    }
+
     public void DisableRecipe()
     {
         this.gameObject.SetActive(false);
@@ -64,19 +75,24 @@ public class RecipeController : MonoBehaviour
 
     public bool isRecipeCorrect(Recipe candidateRecipe)
     {
-        if(setRecipe.container == candidateRecipe.container && compareLiquids(setRecipe.liquids, candidateRecipe.liquids))
+        if (setRecipe.container == candidateRecipe.container && compareLiquids(setRecipe.liquids, candidateRecipe.liquids))
         {
             return true;
         }
         return false;
     }
 
-    private bool compareLiquids(List<IngredientType> masterLiquidList,  List<IngredientType> candidateLiquidList)
+    private bool compareLiquids(List<IngredientType> masterLiquidList, List<IngredientType> candidateLiquidList)
     {
-        int masterLiquidListSize = masterLiquidList.Count;
-        for(int i = 0; i< masterLiquidListSize ; i++)
+        if(masterLiquidList.Count != candidateLiquidList.Count)
         {
-            if(masterLiquidList[i] != candidateLiquidList[i])
+            return false;
+        }
+
+        int masterLiquidListSize = masterLiquidList.Count;
+        for (int i = 0; i < masterLiquidListSize; i++)
+        {
+            if (masterLiquidList[i] != candidateLiquidList[i])
             {
                 return false;
             }

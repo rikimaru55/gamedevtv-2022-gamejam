@@ -1,35 +1,49 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using DG.Tweening;
 
+[System.Serializable]
+public struct Level
+{
+    public float timeBetweenSpawningClients;
+    public int minNumberOfIngredients;
+    public int maxNumberOfIngredients;
+    public float minTime;
+    public float maxTime;
+    public int successesRequiredForNextLevel;
+}
 public class MainGameController : MonoBehaviour
 {
     public IngredientsController IngredientsController;
     public PlayerController PlayerController;
-    public ClientOrderManager ClientOrderManager;
+    public ClientManager ClientManager;
     public PlayerRecipeController PlayerRecipeController;
-    public ClientController ClientController;
     public SpriteRenderer[] HeartSpriteRenderers;
+    public GameObject HeartsContainer;
     public Sprite FullHeart;
     public Sprite EmptyHeart;
+    public List<Level> Levels;
     private Recipe currentRecipe;
     private int currentHealth;
-
+    private int servedDrinks;
+    private int currentLevelIndex = 0;
+    private Level currentLevel;
+    private float clientSpawnerTimer;
+    private bool clientSpawnerRunning;
+    private bool isAnimationRunning = false;
     private void Awake()
     {
-
+        ClientManager.DisableAllClients();
     }
     // Start is called before the first frame update
     void Start()
     {
         IngredientsController.RandomizeIngredients();
-        ClientOrderManager.EnableAllRecipes();
-        ClientOrderManager.RandomizeEnabledRecipes();
+        ClientManager.OnTimerExpired = onClientTimerExpired;
         resetPlayerState();
-        ClientController.StartTimersForActiveClients(30, (expiredClientIndex) =>
-        {
-            decreaseHealth();
-        });
+        loadLevel();
     }
 
     private void resetPlayerState()
@@ -40,6 +54,31 @@ public class MainGameController : MonoBehaviour
         updateHealthIndicator();
         PlayerRecipeController.ResetPlayerRecipe();
         PlayerRecipeController.RecipeUpdate(currentRecipe);
+    }
+
+    private void loadLevel(int index = 0)
+    {
+        currentLevelIndex = index;
+        if (currentLevelIndex >= Levels.Count)
+        {
+            SceneManager.LoadScene(Constants.END_SCENE_NAME);
+            return;
+        }
+        currentLevel = Levels[currentLevelIndex];
+        ClientManager.SpawnClient(currentLevel);
+        startClientSpawnerTimer();
+        servedDrinks = 0;
+    }
+
+    private void onClientTimerExpired(int clientIndex)
+    {
+        decreaseHealth();
+    }
+
+    private void startClientSpawnerTimer()
+    {
+        clientSpawnerTimer = 0.0f;
+        clientSpawnerRunning = true;
     }
 
     private void updateHealthIndicator()
@@ -58,68 +97,134 @@ public class MainGameController : MonoBehaviour
     {
         currentHealth -= healthLoss;
         updateHealthIndicator();
+        checkHealth();
+    }
+
+    private void increaseDrinksServed(int drinksEarned = 1)
+    {
+        servedDrinks += drinksEarned;
+        checkServedDrinks();
+    }
+
+    private void checkServedDrinks()
+    {
+        if (servedDrinks >= currentLevel.successesRequiredForNextLevel)
+        {
+            loadLevel(currentLevelIndex + 1);
+        }
+    }
+
+    private void checkHealth()
+    {
         if (currentHealth <= 0)
         {
             //Trigger Game Over
-            Debug.Log("Game Over");
+            SceneManager.LoadScene(Constants.GAME_OVER_SCENE_NAME);
         }
+    }
+
+    private void checkAndUpdateSpawnTimer()
+    {
+        if (clientSpawnerRunning)
+        {
+            clientSpawnerTimer += Time.deltaTime;
+            if (clientSpawnerTimer > currentLevel.timeBetweenSpawningClients)
+            {
+                ClientManager.SpawnClient(currentLevel);
+                clientSpawnerTimer = 0.0f;
+            }
+        }
+    }
+
+    private void resetRecipe()
+    {
+        currentRecipe.container = IngredientType.PintGlass;
+        currentRecipe.liquids.Clear();
+        PlayerRecipeController.RecipeUpdate(currentRecipe);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        checkAndUpdateSpawnTimer();
+
+        if (Helpers.checkKeyDownWithPause(KeyCode.W) && !isAnimationRunning)
         {
-            IngredientsController.RandomizeIngredients();
-            ClientOrderManager.EnableAllRecipes();
-            ClientOrderManager.RandomizeEnabledRecipes();
+            isAnimationRunning = true;
+            PlayerController.PlayPlayerTakingIngredientAnimation(() =>
+            {
+                var chosenIngredient = IngredientsController.GetIngredientTypeByIndex(PlayerController.PlayerPositionIndex);
+                if (Constants.isContainer(chosenIngredient))
+                {
+                    currentRecipe.container = chosenIngredient;
+                }
+                else if (Constants.isLiquid(chosenIngredient))
+                {
+                    if (currentRecipe.liquids.Count >= Constants.MaxLiquids)
+                    {
+                        // Recipe is full play error sound and shake the UI?
+                    }
+                    else
+                    {
+                        currentRecipe.liquids.Add(chosenIngredient);
+                    }
+                }
+                PlayerRecipeController.RecipeUpdate(currentRecipe);
+                isAnimationRunning = false;
+            });
+
         }
 
-        if (Input.GetKeyDown(KeyCode.W))
+        if (Helpers.checkKeyDownWithPause(KeyCode.S) && !isAnimationRunning)
         {
-            var chosenIngredient = IngredientsController.GetIngredientTypeByIndex(PlayerController.PlayerPositionIndex);
-            if (Constants.isContainer(chosenIngredient))
+            if (ClientManager.IsClientActive(PlayerController.PlayerPositionIndex))
             {
-                currentRecipe.container = chosenIngredient;
-            }
-            else if (Constants.isLiquid(chosenIngredient))
-            {
-                if (currentRecipe.liquids.Count >= Constants.MaxLiquids)
+                if (ClientManager.IsRecipeCorrect(PlayerController.PlayerPositionIndex, currentRecipe))
                 {
-                    // Recipe is full play error sound and shake the UI?
+                    isAnimationRunning = true;
+                    PlayerController.PlayPlayerServingADrinkAnimation(currentRecipe.container, () =>
+                    {
+                        ClientManager.FadeOutClientAndClientOrder(PlayerController.PlayerPositionIndex, () => {
+                            isAnimationRunning = false;
+                            increaseDrinksServed();
+                            ClientManager.DisableClient(PlayerController.PlayerPositionIndex);
+                            resetRecipe();
+                        });
+                    });
                 }
                 else
                 {
-                    currentRecipe.liquids.Add(chosenIngredient);
+                    isAnimationRunning = true;
+                    HeartsContainer.transform.DOShakePosition(0.5f, 0.5f, 5, 45, false, true).OnComplete(() =>
+                    {
+                        isAnimationRunning = false;
+                        decreaseHealth();
+                    });
                 }
-            }
-            PlayerRecipeController.RecipeUpdate(currentRecipe);
-        }
-
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            //TODO: Add case for when there is no client.
-            if (ClientOrderManager.IsRecipeCorrect(PlayerController.PlayerPositionIndex, currentRecipe))
-            {
-                Debug.Log("Correct Recipe");
             }
             else
             {
-                decreaseHealth();
+                // Play error sound and shake the player or something.
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.E))
+
+        if (Helpers.checkKeyDownWithPause(KeyCode.E) && !isAnimationRunning)
         {
-            currentRecipe.container = IngredientType.PintGlass;
-            currentRecipe.liquids.Clear();
-            PlayerRecipeController.RecipeUpdate(currentRecipe);
+            isAnimationRunning = true;
+            PlayerRecipeController.ResetRecipeAnimation(() =>
+            {
+                isAnimationRunning = false;
+                resetRecipe();
+            });
         }
+        checkHealth();
 
 #if DEVELOPMENT_BUILD 
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Helpers.checkInputWithPause(KeyCode.R))
         {
-            PlayerStatusController.ResetPlayerRecipe();
+            IngredientsController.RandomizeIngredients();
+            ClientManager.RandomizeEnabledRecipes();
         }
 #endif
     }

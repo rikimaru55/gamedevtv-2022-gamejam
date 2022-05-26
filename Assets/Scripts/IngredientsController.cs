@@ -30,12 +30,6 @@ public class IngredientsController : MonoBehaviour
         ingredients = new List<IngredientType>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public void RandomizeIngredients()
     {
         ingredients.Clear();

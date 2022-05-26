@@ -476,6 +476,13 @@ MonoBehaviour:
   - {fileID: 6407282668920537926}
   - {fileID: 6370803059684835757}
   ContainerSprite: {fileID: 1388880321462528140}
+  SpriteRenderers:
+  - {fileID: 8619154783555373189}
+  - {fileID: 1388880321462528140}
+  - {fileID: 6370803059684835757}
+  - {fileID: 6407282668920537926}
+  - {fileID: 8530903383538124036}
+  - {fileID: 1784179908558734905}
   Tumbler: {fileID: 21300000, guid: 7c2389d94dfc577459ae7d297500001d, type: 3}
   WineGlass: {fileID: 21300000, guid: 7a6212fb7bb91904d9f5583ad21e3e9f, type: 3}
   PintGlass: {fileID: 21300000, guid: efc7230fbc20b2c43b66ae016afc2246, type: 3}

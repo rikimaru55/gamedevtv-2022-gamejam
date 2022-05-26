@@ -1,16 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-/// <summary>
-/// This class will implement some simple animations like shake, wobble, increase, decrease size
-/// Each animation should have available settings and listeners.
-/// </summary>
-public class Animator : MonoBehaviour
+using DG.Tweening;
+
+public class Sandbox : MonoBehaviour
 {
+    public SimpleAnimator SimpleAnimator;
+    public GameObject Target;
     // Start is called before the first frame update
     void Start()
     {
-        
+        Target.transform.DORotate(new Vector3(0, 0, -90), 10);
     }
 
     // Update is called once per frame
