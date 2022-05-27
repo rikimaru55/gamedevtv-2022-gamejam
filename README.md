@@ -48,10 +48,10 @@ We'll make those "BlaBla" sounds with simlish.
 ## Wednesday
 Animation Part 1
 ## Thursday
-Make each client have to order several drinks before leaving.
+Dialogue generator and simlish
 Sound
 ## Friday
-Dialogue generator and simlish
+Make each client have to order several drinks before leaving.
 Start and end cinematics
 ## Saturday
 Level Design
@@ -81,3 +81,6 @@ ArtDeco Geometric Patterns from [Used in background for itch.io]: https://pixelb
 
 Better Minimal WebGL Template:
 https://seansleblanc.itch.io/better-minimal-webgl-template/download/eyJpZCI6MTg3NDE2LCJleHBpcmVzIjoxNjUzMzYzMjE5fQ%3d%3d.8pDl6xP8aG0yzfNGSkJg8S96yHI%3d
+
+BlaBlaBla sound used for testing:
+https://freesound.org/people/unfa/sounds/165539/

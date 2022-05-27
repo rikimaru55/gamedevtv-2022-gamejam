@@ -13,6 +13,8 @@ public struct Level
     public float minTime;
     public float maxTime;
     public int successesRequiredForNextLevel;
+    public int minNumberOfDrinks;
+    public int maxNumberOfDrinks;
 }
 public class MainGameController : MonoBehaviour
 {
@@ -25,6 +27,7 @@ public class MainGameController : MonoBehaviour
     public Sprite FullHeart;
     public Sprite EmptyHeart;
     public List<Level> Levels;
+    public DialogueController DialogueController;
     private Recipe currentRecipe;
     private int currentHealth;
     private int servedDrinks;
@@ -44,6 +47,7 @@ public class MainGameController : MonoBehaviour
         ClientManager.OnTimerExpired = onClientTimerExpired;
         resetPlayerState();
         loadLevel();
+        //DialogueController.QueueMessage("Bacon ipsum dolor amet picanha shankle ham, biltong cupim strip steak boudin. Andouille corned beef short loin, swine tail biltong porchetta brisket bresaola ground round tongue salami strip steak boudin. Brisket pork belly chicken fatback. Ham hock doner drumstick, short loin venison sausage bacon jerky t-bone tri-tip hamburger.");
     }
 
     private void resetPlayerState()
@@ -65,7 +69,7 @@ public class MainGameController : MonoBehaviour
             return;
         }
         currentLevel = Levels[currentLevelIndex];
-        ClientManager.SpawnClient(currentLevel);
+        spawnClient();
         startClientSpawnerTimer();
         servedDrinks = 0;
     }
@@ -130,10 +134,15 @@ public class MainGameController : MonoBehaviour
             clientSpawnerTimer += Time.deltaTime;
             if (clientSpawnerTimer > currentLevel.timeBetweenSpawningClients)
             {
-                ClientManager.SpawnClient(currentLevel);
+                spawnClient();
                 clientSpawnerTimer = 0.0f;
             }
         }
+    }
+
+    private void spawnClient()
+    {
+        ClientManager.SpawnClient(currentLevel);
     }
 
     private void resetRecipe()
@@ -141,6 +150,11 @@ public class MainGameController : MonoBehaviour
         currentRecipe.container = IngredientType.PintGlass;
         currentRecipe.liquids.Clear();
         PlayerRecipeController.RecipeUpdate(currentRecipe);
+    }
+
+    private void generateDialogueForClient()
+    {
+        //GENERATE AND DISPLAY THE CLIENT'S DIALOGUE
     }
 
     // Update is called once per frame
@@ -186,8 +200,17 @@ public class MainGameController : MonoBehaviour
                     {
                         ClientManager.FadeOutClientAndClientOrder(PlayerController.PlayerPositionIndex, () => {
                             isAnimationRunning = false;
+                            // We only delete a client once that client has had all their drinks.
+                            if (ClientManager.ServeDrinkToClient(PlayerController.PlayerPositionIndex))
+                            {
+                                ClientManager.DisableClient(PlayerController.PlayerPositionIndex);
+                                generateDialogueForClient();
+                            }
+                            else
+                            {
+
+                            }
                             increaseDrinksServed();
-                            ClientManager.DisableClient(PlayerController.PlayerPositionIndex);
                             resetRecipe();
                         });
                     });

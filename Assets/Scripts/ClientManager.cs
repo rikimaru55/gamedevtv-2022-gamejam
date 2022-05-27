@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class ClientManager : MonoBehaviour
@@ -8,11 +9,21 @@ public class ClientManager : MonoBehaviour
 
     public RecipeController[] RecipeControllers;
     public ClientTimerController[] ClientTimerControllers;
+    public List<TextMeshProUGUI> CountersText;
 
     private Action<int> onTimerExpired;
     public Action<int> OnTimerExpired
     {
         set { onTimerExpired = value; }
+    }
+
+    private Dictionary<int,int> drinksServedPerClient;
+    private Dictionary<int, int> drinksNeededPerClient;
+
+    private void Awake()
+    {
+        drinksServedPerClient = new Dictionary<int, int>();
+        drinksNeededPerClient = new Dictionary<int, int>();
     }
 
     public void SpawnClient(Level level)
@@ -21,6 +32,8 @@ public class ClientManager : MonoBehaviour
         {
             return;
         }
+
+        // Try to find available client
         ClientTimerController chosenClient = (ClientTimerController)ClientTimerControllers.GetValue(UnityEngine.Random.RandomRange(0, ClientTimerControllers.Length));
         const int MAX_TRIES = 10;
         int tryCounter = 0;
@@ -33,10 +46,26 @@ public class ClientManager : MonoBehaviour
         {
             throw new Exception("Couldn't find appropriate client to spawn.");
         }
+
+        // Found client
         float timerAmount = UnityEngine.Random.RandomRange(level.minTime, level.maxTime);
         RecipeControllers[chosenClient.Index].EnableRecipe();
         RecipeControllers[chosenClient.Index].RandomizeRecipe(UnityEngine.Random.RandomRange(level.minNumberOfIngredients, level.maxNumberOfIngredients));
         chosenClient.ResetTimer(timerAmount, clientTimerExpired);
+        drinksServedPerClient[chosenClient.Index] = 0;
+        SetCounterValue(chosenClient.Index, drinksServedPerClient[chosenClient.Index]);
+        drinksNeededPerClient[chosenClient.Index] = UnityEngine.Random.RandomRange(level.minNumberOfDrinks, level.maxNumberOfDrinks);
+    }
+
+    public bool ServeDrinkToClient(int clientIndex)
+    {
+        drinksServedPerClient[clientIndex] += 1;
+        SetCounterValue(clientIndex, drinksServedPerClient[clientIndex]);
+        if (drinksServedPerClient[clientIndex] >= drinksNeededPerClient[clientIndex])
+        {
+            return true;
+        }
+        return false;
     }
 
     private int countActiveClients()
@@ -51,8 +80,7 @@ public class ClientManager : MonoBehaviour
 
     private void clientTimerExpired(int index)
     {
-        ClientTimerControllers[index].DisableTimer();
-        RecipeControllers[index].DisableRecipe();
+        DisableClient(index);
         onTimerExpired(index);
     }
 
@@ -77,6 +105,10 @@ public class ClientManager : MonoBehaviour
         {
             recipeController.DisableRecipe();
         }
+        foreach (var counterText in CountersText)
+        {
+            counterText.gameObject.SetActive(false);
+        }
     }
     public void DisableClient(int index)
     {
@@ -88,8 +120,32 @@ public class ClientManager : MonoBehaviour
         {
             ClientTimerControllers[index].DisableTimer();
         }
+        if (CountersText[index] != null)
+        {
+            CountersText[index].gameObject.SetActive(false);
+        }
     }
 
+    public void ResetClientRecipeAndTimer(int index, Level level)
+    {
+        if (RecipeControllers[index] != null)
+        {
+            RecipeControllers[index].RandomizeRecipe(UnityEngine.Random.RandomRange(level.minNumberOfIngredients, level.maxNumberOfIngredients));
+        }
+        if (ClientTimerControllers[index] != null)
+        {
+            float timerAmount = UnityEngine.Random.RandomRange(level.minTime, level.maxTime);
+            ClientTimerControllers[index].ResetTimer(timerAmount, clientTimerExpired);
+        }
+    }
+
+    public void SetCounterValue(int index, int value)
+    {
+        if (CountersText[index])
+        {
+            CountersText[index].text = value.ToString();
+        }
+    }
     public void FadeOutClientAndClientOrder(int index, Action onFadeOutClientAndClientOrder)
     {
         bool clientFaded = false;
