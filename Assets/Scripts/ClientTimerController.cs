@@ -13,6 +13,7 @@ public class ClientTimerController : ClientCommon
     private float timeGoal = 0;
     private bool timerRunning = false;
     public SpriteRenderer[] SpriteRenderers;
+    public GameObject Anger;
     public void ResetTimer(float timeInSeconds, Action<int> onTimerEnd)
     {
         EnableTimer();
@@ -31,8 +32,8 @@ public class ClientTimerController : ClientCommon
 
     public void DisableTimer()
     {
-       stopTimer();
-       this.gameObject.SetActive(false);
+        stopTimer();
+        this.gameObject.SetActive(false);
     }
 
     public void EnableTimer()
@@ -70,6 +71,15 @@ public class ClientTimerController : ClientCommon
             this.DisableTimer();
             this.ResetSpriteRenderers(SpriteRenderers);
             onFadeOutClientEnd();
+        });
+    }
+
+    public void PlayAngerAnimation()
+    {
+        this.Anger.SetActive(true);
+        this.Anger.transform.DOShakeScale(1.0f, 2, 5, 10, true).OnComplete(() =>
+        {
+            this.Anger.SetActive(false);
         });
     }
 }

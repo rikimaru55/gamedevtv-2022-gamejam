@@ -41,10 +41,12 @@ public class PlayerController : MonoBehaviour
         }
         if (Helpers.checkKeyWithPause(KeyCode.D))
         {
+            SoundManager.GetInstance().PlayWalkSound();
             movePlayerRight();
         }
         else if (Helpers.checkKeyWithPause(KeyCode.A))
         {
+            SoundManager.GetInstance().PlayWalkSound();
             movePlayerLeft();
         }
     }

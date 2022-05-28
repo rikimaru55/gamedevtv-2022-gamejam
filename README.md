@@ -84,3 +84,23 @@ https://seansleblanc.itch.io/better-minimal-webgl-template/download/eyJpZCI6MTg3
 
 BlaBlaBla sound used for testing:
 https://freesound.org/people/unfa/sounds/165539/
+ Glass: Putting down 1
+https://freesound.org/people/Sheyvan/sounds/471914/
+Sloshes of Liquid in Pitcher Multiple FF353.aif
+https://freesound.org/people/martinimeniscus/sounds/199385/
+Clinking Glasses
+https://freesound.org/people/redafs/sounds/379506/
+Footstep_Carpet_01.wav
+https://freesound.org/people/scholzi982/sounds/566180/
+01111 big trash can.wav
+https://freesound.org/people/Robinhood76/sounds/75130/
+76 BPM LOFI DRUM LOOP.wav
+https://freesound.org/people/holizna/sounds/629144/
+soft grunt.wav
+https://freesound.org/people/Reitanna/sounds/252235/
+
+
+
+Poppers and Prosecco by Kevin MacLeod
+Link: https://incompetech.filmmusic.io/song/4231-poppers-and-prosecco
+License: https://filmmusic.io/standard-license

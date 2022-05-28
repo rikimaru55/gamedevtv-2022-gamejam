@@ -28,6 +28,7 @@ public class MainGameController : MonoBehaviour
     public Sprite EmptyHeart;
     public List<Level> Levels;
     public DialogueController DialogueController;
+    public GameObject PlayerAnger;
     private Recipe currentRecipe;
     private int currentHealth;
     private int servedDrinks;
@@ -47,7 +48,7 @@ public class MainGameController : MonoBehaviour
         ClientManager.OnTimerExpired = onClientTimerExpired;
         resetPlayerState();
         loadLevel();
-        //DialogueController.QueueMessage("Bacon ipsum dolor amet picanha shankle ham, biltong cupim strip steak boudin. Andouille corned beef short loin, swine tail biltong porchetta brisket bresaola ground round tongue salami strip steak boudin. Brisket pork belly chicken fatback. Ham hock doner drumstick, short loin venison sausage bacon jerky t-bone tri-tip hamburger.");
+        DialogueController.QueueMessage("Bacon ipsum dolor amet picanha shankle ham, biltong cupim strip steak boudin.Bacon ipsum dolor amet picanha shankle ham, biltong cupim strip steak boudin.");
     }
 
     private void resetPlayerState()
@@ -170,6 +171,7 @@ public class MainGameController : MonoBehaviour
                 var chosenIngredient = IngredientsController.GetIngredientTypeByIndex(PlayerController.PlayerPositionIndex);
                 if (Constants.isContainer(chosenIngredient))
                 {
+                    SoundManager.GetInstance().PlayGlassClinkingSound();
                     currentRecipe.container = chosenIngredient;
                 }
                 else if (Constants.isLiquid(chosenIngredient))
@@ -180,6 +182,7 @@ public class MainGameController : MonoBehaviour
                     }
                     else
                     {
+                        SoundManager.GetInstance().PlayLiquidPouringSound();
                         currentRecipe.liquids.Add(chosenIngredient);
                     }
                 }
@@ -196,28 +199,32 @@ public class MainGameController : MonoBehaviour
                 if (ClientManager.IsRecipeCorrect(PlayerController.PlayerPositionIndex, currentRecipe))
                 {
                     isAnimationRunning = true;
+                    increaseDrinksServed();
+                    resetRecipe();
                     PlayerController.PlayPlayerServingADrinkAnimation(currentRecipe.container, () =>
                     {
-                        ClientManager.FadeOutClientAndClientOrder(PlayerController.PlayerPositionIndex, () => {
-                            isAnimationRunning = false;
-                            // We only delete a client once that client has had all their drinks.
-                            if (ClientManager.ServeDrinkToClient(PlayerController.PlayerPositionIndex))
-                            {
+                        SoundManager.GetInstance().PlayGlassPutDownSound();
+                        // We only delete a client once that client has had all their drinks.
+                        if (ClientManager.ServeDrinkToClient(PlayerController.PlayerPositionIndex))
+                        {
+                            ClientManager.FadeOutClientAndClientOrder(PlayerController.PlayerPositionIndex, () => {
                                 ClientManager.DisableClient(PlayerController.PlayerPositionIndex);
+                                isAnimationRunning = false;
                                 generateDialogueForClient();
-                            }
-                            else
-                            {
-
-                            }
-                            increaseDrinksServed();
-                            resetRecipe();
-                        });
+                            });
+                        }
+                        else
+                        {
+                            isAnimationRunning = false;
+                            ClientManager.ResetClientRecipeAndTimer(PlayerController.PlayerPositionIndex, currentLevel);
+                        }
                     });
                 }
                 else
                 {
                     isAnimationRunning = true;
+                    ClientManager.ServeWrongDrinkToClient(PlayerController.PlayerPositionIndex);
+                    SoundManager.GetInstance().PlayWrongDrinkSound();
                     HeartsContainer.transform.DOShakePosition(0.5f, 0.5f, 5, 45, false, true).OnComplete(() =>
                     {
                         isAnimationRunning = false;
@@ -227,7 +234,12 @@ public class MainGameController : MonoBehaviour
             }
             else
             {
-                // Play error sound and shake the player or something.
+                SoundManager.GetInstance().PlayGruntSound();
+                PlayerAnger.SetActive(true);
+                PlayerAnger.transform.DOShakeScale(0.50f, 2, 5, 10, true).OnComplete(() =>
+                {
+                    PlayerAnger.SetActive(false);
+                });
             }
         }
 
@@ -238,6 +250,7 @@ public class MainGameController : MonoBehaviour
             PlayerRecipeController.ResetRecipeAnimation(() =>
             {
                 isAnimationRunning = false;
+                SoundManager.GetInstance().PlayTrashSound();
                 resetRecipe();
             });
         }

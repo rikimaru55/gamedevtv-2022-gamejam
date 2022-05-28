@@ -55,6 +55,7 @@ public class ClientManager : MonoBehaviour
         drinksServedPerClient[chosenClient.Index] = 0;
         SetCounterValue(chosenClient.Index, drinksServedPerClient[chosenClient.Index]);
         drinksNeededPerClient[chosenClient.Index] = UnityEngine.Random.RandomRange(level.minNumberOfDrinks, level.maxNumberOfDrinks);
+        CountersText[chosenClient.Index].gameObject.SetActive(true);
     }
 
     public bool ServeDrinkToClient(int clientIndex)
@@ -66,6 +67,11 @@ public class ClientManager : MonoBehaviour
             return true;
         }
         return false;
+    }
+
+    public void ServeWrongDrinkToClient(int clientIndex)
+    {
+        ClientTimerControllers[clientIndex].PlayAngerAnimation();
     }
 
     private int countActiveClients()

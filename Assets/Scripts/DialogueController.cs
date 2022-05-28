@@ -16,20 +16,20 @@ public class DialogueController : MonoBehaviour {
     public GameObject DialogueBackground;
     public GameObject DialogueText;
     private TextWriter.TextWriterSingle textWriterSingle;
-    public AudioSource talkingAudioSource;
 
     private void StartDialogue() {
         DialogueCharacter.SetActive(true);
         DialogueBackground.SetActive(true);
         DialogueText.SetActive(true);
-        talkingAudioSource.Play();
+        var sm = SoundManager.GetInstance();
+        StartCoroutine(sm.PlayDialogue());
     }
 
     private void StopDialogue() {
         DialogueCharacter.SetActive(false);
         DialogueBackground.SetActive(false);
         DialogueText.SetActive(false);
-        talkingAudioSource.Stop();
+        SoundManager.GetInstance().dialoguePlaying = false;
     }
 
     private void Update()
