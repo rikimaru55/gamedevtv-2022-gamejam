@@ -63,6 +63,16 @@ public class SoundManager : MonoBehaviour
         grunt.Play();
     }
 
+    public void PlayMainMusicPlayer()
+    {
+        mainMusicPlayer.Play();
+    }
+
+    public void PauseMainMusicPlayer()
+    {
+        mainMusicPlayer.Pause();
+    }
+
     private void playRandomClipOnAudioSource(List<AudioClip> clips, AudioSource audioSource)
     {
         AudioClip clip = clips[Random.Range(0, clips.Count)];

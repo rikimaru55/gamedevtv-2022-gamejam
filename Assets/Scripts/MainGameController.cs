@@ -29,6 +29,7 @@ public class MainGameController : MonoBehaviour
     public List<Level> Levels;
     public DialogueController DialogueController;
     public GameObject PlayerAnger;
+    public SpriteRenderer CurtainBackground;
     private Recipe currentRecipe;
     private int currentHealth;
     private int servedDrinks;
@@ -39,6 +40,7 @@ public class MainGameController : MonoBehaviour
     private bool isAnimationRunning = false;
     private void Awake()
     {
+        CurtainBackground.gameObject.SetActive(true);
         ClientManager.DisableAllClients();
     }
     // Start is called before the first frame update
@@ -48,7 +50,20 @@ public class MainGameController : MonoBehaviour
         ClientManager.OnTimerExpired = onClientTimerExpired;
         resetPlayerState();
         loadLevel();
-        DialogueController.QueueMessage("Bacon ipsum dolor amet picanha shankle ham, biltong cupim strip steak boudin.Bacon ipsum dolor amet picanha shankle ham, biltong cupim strip steak boudin.");
+        raiseCurtainAnimation();
+        //DialogueController.QueueMessage("Bacon ipsum dolor amet picanha shankle ham, biltong cupim strip steak boudin.Bacon ipsum dolor amet picanha shankle ham, biltong cupim strip steak boudin.");
+    }
+
+    private void raiseCurtainAnimation()
+    {
+        isAnimationRunning = true;
+        CurtainBackground.DOFade(0.0f, 3.0f);
+        CurtainBackground.gameObject.transform.DOMoveY(CurtainBackground.gameObject.transform.position.y + 11.0f, 3.0f).OnComplete(() =>
+        {
+            isAnimationRunning = false;
+            SoundManager.GetInstance().PlayMainMusicPlayer();
+            CurtainBackground.gameObject.SetActive(false);
+        });
     }
 
     private void resetPlayerState()
@@ -153,11 +168,6 @@ public class MainGameController : MonoBehaviour
         PlayerRecipeController.RecipeUpdate(currentRecipe);
     }
 
-    private void generateDialogueForClient()
-    {
-        //GENERATE AND DISPLAY THE CLIENT'S DIALOGUE
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -198,10 +208,11 @@ public class MainGameController : MonoBehaviour
             {
                 if (ClientManager.IsRecipeCorrect(PlayerController.PlayerPositionIndex, currentRecipe))
                 {
+                    IngredientType container = currentRecipe.container;
                     isAnimationRunning = true;
                     increaseDrinksServed();
                     resetRecipe();
-                    PlayerController.PlayPlayerServingADrinkAnimation(currentRecipe.container, () =>
+                    PlayerController.PlayPlayerServingADrinkAnimation(container, () =>
                     {
                         SoundManager.GetInstance().PlayGlassPutDownSound();
                         // We only delete a client once that client has had all their drinks.
@@ -210,7 +221,7 @@ public class MainGameController : MonoBehaviour
                             ClientManager.FadeOutClientAndClientOrder(PlayerController.PlayerPositionIndex, () => {
                                 ClientManager.DisableClient(PlayerController.PlayerPositionIndex);
                                 isAnimationRunning = false;
-                                generateDialogueForClient();
+                                DialogueController.GenerateMessage();
                             });
                         }
                         else

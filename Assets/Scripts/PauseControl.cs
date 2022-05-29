@@ -24,11 +24,13 @@ public class PauseControl : MonoBehaviour
         {
             Time.timeScale = 0f;
             pauseBackground.enabled = true;
+            SoundManager.GetInstance().PauseMainMusicPlayer();
         }
         else
         {
             pauseBackground.enabled = false;
             Time.timeScale = 1;
+            SoundManager.GetInstance().PlayMainMusicPlayer();
         }
     }
 }
