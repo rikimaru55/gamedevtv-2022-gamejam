@@ -35,4 +35,21 @@ public class Helpers
 
         return false;
     }
+
+    public static List<string> GetClientMessages()
+    {
+        return new List<string>(PlayerPrefs.GetString(Constants.PLAYER_PREFS_CLIENT_MESSAGES_KEY).Split(","));
+    }
+
+    public static void ResetClientMessages()
+    {
+        PlayerPrefs.SetString(Constants.PLAYER_PREFS_CLIENT_MESSAGES_KEY, "");
+    }
+
+    public static void AddClientMessage(string clientMessage)
+    {
+        string currentMessages = PlayerPrefs.GetString(Constants.PLAYER_PREFS_CLIENT_MESSAGES_KEY, "");
+        currentMessages += $",{clientMessage}";
+        PlayerPrefs.SetString(Constants.PLAYER_PREFS_CLIENT_MESSAGES_KEY, currentMessages);
+    }
 }

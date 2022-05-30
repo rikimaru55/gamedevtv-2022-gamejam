@@ -7,7 +7,7 @@ public class MainMenuController : MonoBehaviour
 {
     public void OnPlayButtonClick()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(Constants.OPENING_SCENE_NAME);
     }
 
     public void OnQuitButtonClick()

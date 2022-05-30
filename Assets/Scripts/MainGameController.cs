@@ -51,7 +51,6 @@ public class MainGameController : MonoBehaviour
         resetPlayerState();
         loadLevel();
         raiseCurtainAnimation();
-        //DialogueController.QueueMessage("Bacon ipsum dolor amet picanha shankle ham, biltong cupim strip steak boudin.Bacon ipsum dolor amet picanha shankle ham, biltong cupim strip steak boudin.");
     }
 
     private void raiseCurtainAnimation()
@@ -139,7 +138,7 @@ public class MainGameController : MonoBehaviour
         if (currentHealth <= 0)
         {
             //Trigger Game Over
-            SceneManager.LoadScene(Constants.GAME_OVER_SCENE_NAME);
+            SceneManager.LoadScene(Constants.END_SCENE_NAME);
         }
     }
 

@@ -81,10 +81,31 @@ public class DialogueController : MonoBehaviour
         }
     }
 
-    public void QueueMessage(string message)
+    public void WriteAllAndDestroy()
+    {
+        if (textWriterSingle != null && textWriterSingle.IsActive())
+        {
+            // Currently active TextWriter
+            textWriterSingle.WriteAllAndDestroy();
+        }
+    }
+
+    public bool IsTextWriterActive()
+    {
+        return textWriterSingle != null && textWriterSingle.IsActive();
+    }
+
+    public void QueueMessage(string message, Action customStopDialogue = null)
     {
         StartDialogue();
-        textWriterSingle = TextWriter.AddWriter_Static(MessageText, message, .02f, true, true, StopDialogue);
+        if(customStopDialogue != null)
+        {
+            textWriterSingle = TextWriter.AddWriter_Static(MessageText, message, .05f, true, true, customStopDialogue);
+        }
+        else
+        {
+            textWriterSingle = TextWriter.AddWriter_Static(MessageText, message, .05f, true, true, StopDialogue);
+        }
     }
 
     public void GenerateMessage()
