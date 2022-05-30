@@ -1,5 +1,9 @@
 # gamedevtv-2022-gamejam
 
+## Warning!
+Be it on your head if you copy-paste code from one project into your another without reformating.
+- Letter To The Coders Ch.2 Verse 10
+
 ## GDD
 
 ### Original concept 
@@ -44,23 +48,6 @@ We'll make those "BlaBla" sounds with simlish.
 * Possible Keywords: Feelings, Places, Names, Months, Events, Colors, etc...
 * At the end of a game, we'll let players scroll through all the generated phrases.
 
-### TODO
-## Wednesday
-Animation Part 1
-## Thursday
-Dialogue generator and simlish
-Sound
-## Friday
-Make each client have to order several drinks before leaving.
-Start and end cinematics
-## Saturday
-Level Design
-Testing & Polishing
-## Sunday
-Emergency
-## Monday
-Distribution
-
 ### NTHs
 * Each client’s appearance is randomized.
 * Each drink you served has a randomly generated name based on its ingredients(giving meaning to each colour, research Greek Humours for this)
@@ -71,7 +58,7 @@ Distribution
 * Move all bottles into a single cabinet, then when the player is in front of it, they can choose which type of container to use with numbers or something?
 * Instead of clients telling the player what they want, clients talk about their problems and certain words in their talk are highlighted different colours, the player must then decipher from the client’s words the order and colour of drink to serve the client.This could be possible for the commercial version of this project since this requires much more involved programming, and perhaps even NPL
 
-### References
+### References and Resources
 Straub, J. (1914). Drinks. Marie Straub/Hotel Monthly Press. https://euvs-vintage-cocktail-books.cld.bz/1914-Drinks-by-Jacques-Straub/IV
 
 https://unsplash.com/photos/osuiatBDTww
